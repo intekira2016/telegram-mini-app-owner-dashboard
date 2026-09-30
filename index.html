@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Приборная панель собственника</title>
+<style>
+:root{
+  --bg:#f5f7fb; --card:#fff; --text:#15233a; --muted:#6d7788;
+  --line:#e4e8ef; --accent:#1f5fae; --green:#35a66f; --yellow:#e6a72e; --red:#d95c55;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#f4f7fb,#eef2f7);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text)}
+.wrap{max-width:720px;margin:auto;padding:18px 16px 34px}
+.brand{font-size:13px;font-weight:800;letter-spacing:.12em;color:#536174;text-transform:uppercase;margin:4px 2px 18px}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px 20px;box-shadow:0 10px 30px rgba(21,35,58,.06)}
+h1{font-size:29px;line-height:1.08;margin:0 0 10px;letter-spacing:-.03em}
+.lead{font-size:16px;line-height:1.5;color:var(--muted);margin:0}
+.progress{height:7px;background:#edf0f4;border-radius:99px;overflow:hidden;margin:20px 0 8px}
+.progress>div{height:100%;width:0;background:var(--accent);transition:.25s}
+.step{font-size:13px;color:var(--muted);margin-bottom:20px}
+.card{display:none;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 18px;margin-top:14px;box-shadow:0 8px 24px rgba(21,35,58,.05)}
+.card.active{display:block}
+.kicker{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.qtitle{font-size:23px;line-height:1.18;margin:0 0 8px}
+.qtext{font-size:15px;line-height:1.5;color:var(--muted);margin:0 0 18px}
+.answers{display:grid;gap:10px}
+.answer{border:1px solid var(--line);background:#fbfcfe;border-radius:16px;padding:15px;text-align:left;cursor:pointer;transition:.18s}
+.answer:hover{transform:translateY(-1px);border-color:#cbd4e1}
+.answer strong{display:block;font-size:15px;margin-bottom:4px}
+.answer span{display:block;color:var(--muted);font-size:13px;line-height:1.4}
+.answer.green strong{color:var(--green)} .answer.yellow strong{color:#b17a08}.answer.red strong{color:var(--red)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+button{font:inherit}
+.btn{border:0;border-radius:14px;padding:13px 18px;font-weight:800;cursor:pointer}
+.primary{background:var(--accent);color:#fff;flex:1}
+.secondary{background:#edf1f6;color:#405067}
+.results{display:none}
+.results.active{display:block}
+.scorebox{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:18px 0}
+.metric{background:#f7f9fc;border:1px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center}
+.metric b{display:block;font-size:25px}.metric small{color:var(--muted);font-size:11px}
+.result-head{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 18px}
+.result-head h2{font-size:24px;margin:0 0 8px}.result-head p{color:var(--muted);line-height:1.5;margin:0}
+.block-result{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:10px}
+.row{display:flex;gap:12px;align-items:flex-start}.dot{width:12px;height:12px;border-radius:50%;margin-top:5px;flex:none}
+.dot.green{background:var(--green)}.dot.yellow{background:var(--yellow)}.dot.red{background:var(--red)}
+.block-result h3{margin:0 0 5px;font-size:16px}.block-result p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+.action{margin-top:20px;background:#15233a;color:#fff;border-radius:20px;padding:20px}
+.action h3{margin:0 0 8px;font-size:19px}.action p{margin:0;color:#dbe3ee;line-height:1.5}
+.restart{margin-top:14px;width:100%}
+.footer{margin-top:22px;text-align:center;color:#8792a3;font-size:12px}
+@media(max-width:430px){h1{font-size:26px}.qtitle{font-size:21px}.scorebox{gap:6px}.metric{padding:12px 6px}}
+
+.header-image{
+  width:100%;
+  display:block;
+  border-radius:24px;
+  margin:0 0 14px;
+  border:1px solid #e4e8ef;
+  box-shadow:0 10px 30px rgba(21,35,58,.06);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Финансы без тумана</div>
+
+  <img class="header-image" src="dashboard-header.png" alt="Приборная панель собственника">
+  <section class="hero" id="intro">
+    <h1>Насколько хорошо вы видите свой бизнес по цифрам?</h1>
+    <p class="lead">8 коротких вопросов по «Приборной панели собственника». В конце вы получите персональную картину: что под контролем, где нужно внимание и что стоит разобрать в первую очередь.</p>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="step" id="step">Вопрос 1 из 8</div>
+  </section>
+
+  <div id="quiz"></div>
+
+  <section class="results" id="results">
+    <div class="result-head">
+      <div class="kicker">Ваш результат</div>
+      <h2 id="resultTitle"></h2>
+      <p id="resultText"></p>
+    </div>
+    <div class="scorebox">
+      <div class="metric"><b id="greenCount">0</b><small>под контролем</small></div>
+      <div class="metric"><b id="yellowCount">0</b><small>требует внимания</small></div>
+      <div class="metric"><b id="redCount">0</b><small>нужно разобрать</small></div>
+    </div>
+    <div id="details"></div>
+    <div class="action">
+      <h3>Если оставить только один вопрос</h3>
+      <p id="finalAction"></p>
+    </div>
+    <button class="btn secondary restart" onclick="restart()">Пройти ещё раз</button>
+    <div class="footer">Приборная панель собственника · Финансы без тумана</div>
+  </section>
+</div>
+
+<script>
+const items = [
+ {name:"Выручка", q:"Что происходит с продажами?", desc:"Смотрите факт, динамику и план.", advice:"Проверьте, как изменение продаж связано с прибылью, маржой и деньгами."},
+ {name:"Прибыль", q:"Бизнес зарабатывает больше или меньше?", desc:"Смотрите факт и динамику прибыли.", advice:"Сравните динамику прибыли с выручкой и ищите причину изменения результата."},
+ {name:"Маржинальность", q:"Не растёт ли выручка за счёт ухудшения экономики?", desc:"Смотрите маржу / рентабельность по ключевым направлениям.", advice:"Разберите направления, проекты или продукты, где экономика стала слабее."},
+ {name:"Деньги", q:"Хватит ли денег на ближайшие обязательства?", desc:"Смотрите остатки на счетах.", advice:"Сверьте остатки с ближайшими платежами и обязательствами."},
+ {name:"Денежный поток", q:"Почему денег стало больше или меньше?", desc:"Смотрите притоки и оттоки.", advice:"Разберите основные источники поступлений и направления оттока денег."},
+ {name:"Дебиторка", q:"Какие деньги зависли и когда мы их ожидаем?", desc:"Смотрите сумму и сроки оплаты.", advice:"Проверьте сроки оплат и выделите зависшие деньги."},
+ {name:"Кредиторка", q:"Что и когда нам предстоит оплатить?", desc:"Смотрите сумму и график платежей.", advice:"Сопоставьте обязательства и график платежей с доступными деньгами."},
+ {name:"План vs факт", q:"Где мы отклонились и почему?", desc:"Смотрите ключевые отклонения.", advice:"Найдите предположение, которое не сработало, и определите, какое решение требуется."}
+];
+const options = [
+ {k:"green",title:"В норме",text:"Я вижу показатель, понимаю динамику и могу объяснить, что происходит."},
+ {k:"yellow",title:"Требует внимания",text:"Показатель вижу, но не до конца понимаю причину или последствия."},
+ {k:"red",title:"Нужно разобраться",text:"Сейчас нет ясной картины или показатель вызывает серьёзные вопросы."}
+];
+let answers = Array(items.length).fill(null), current=0;
+
+function render(){
+ const qwrap=document.getElementById("quiz");
+ qwrap.innerHTML="";
+ items.forEach((it,i)=>{
+   const card=document.createElement("section");
+   card.className="card"+(i===0?" active":"");
+   card.id="q"+i;
+   card.innerHTML=`<div class="kicker">${i+1} / ${items.length}</div>
+     <h2 class="qtitle">${it.name}</h2>
+     <p class="qtext">${it.q}<br>${it.desc}</p>
+     <div class="answers">${options.map(o=>`<button class="answer ${o.k}" onclick="choose(${i},'${o.k}')"><strong>${o.title}</strong><span>${o.text}</span></button>`).join("")}</div>
+     <div class="nav"><button class="btn secondary" onclick="prev()" ${i===0?"style='visibility:hidden'":""}>← Назад</button>
+     <button class="btn primary" id="next${i}" onclick="next()" disabled>${i===items.length-1?"Получить результат":"Дальше →"}</button></div>`;
+   qwrap.appendChild(card);
+ });
+ update();
+}
+function choose(i,k){
+ answers[i]=k;
+ document.querySelectorAll("#q"+i+" .answer").forEach(x=>x.style.outline="none");
+ const btn=[...document.querySelectorAll("#q"+i+" .answer")].find(x=>x.classList.contains(k));
+ if(btn) btn.style.outline="2px solid #1f5fae";
+ document.getElementById("next"+i).disabled=false;
+}
+function update(){
+ document.querySelectorAll(".card").forEach((c,i)=>c.classList.toggle("active",i===current));
+ const pct=((current)/items.length)*100;
+ document.getElementById("bar").style.width=pct+"%";
+ document.getElementById("step").textContent=`Вопрос ${current+1} из ${items.length}`;
+}
+function next(){
+ if(!answers[current]) return;
+ if(current===items.length-1){showResults();return;}
+ current++; update();
+}
+function prev(){if(current>0){current--;update();}}
+function showResults(){
+ document.getElementById("intro").style.display="none";
+ document.getElementById("quiz").style.display="none";
+ document.getElementById("results").classList.add("active");
+ document.getElementById("bar").style.width="100%";
+ const g=answers.filter(x=>x==="green").length,y=answers.filter(x=>x==="yellow").length,r=answers.filter(x=>x==="red").length;
+ document.getElementById("greenCount").textContent=g;
+ document.getElementById("yellowCount").textContent=y;
+ document.getElementById("redCount").textContent=r;
+ let title,text;
+ if(r>=3){title="Есть зоны, которые стоит разобрать в первую очередь";text="Сейчас у вас несколько показателей, по которым нет ясной картины. Начните не с таблиц, а с причин: где именно бизнес теряет управляемость."}
+ else if(r>=1 || y>=4){title="Бизнес виден, но есть заметные зоны внимания";text="Основные показатели у вас на радаре, но часть сигналов требует более глубокого разбора. Именно там могут скрываться решения, которые сейчас откладываются."}
+ else {title="Финансовая картина у вас под контролем";text="Вы видите ключевые показатели и понимаете, что за ними происходит. Следующий уровень — регулярно связывать цифры с конкретными решениями."}
+ document.getElementById("resultTitle").textContent=title;
+ document.getElementById("resultText").textContent=text;
+ const details=document.getElementById("details"); details.innerHTML="";
+ items.forEach((it,i)=>{
+   const k=answers[i];
+   const opt=options.find(o=>o.k===k);
+   const el=document.createElement("div"); el.className="block-result";
+   el.innerHTML=`<div class="row"><div class="dot ${k}"></div><div><h3>${it.name} — ${opt.title}</h3><p>${k==="green"?"Показатель находится в рабочем поле контроля.":it.advice}</p></div></div>`;
+   details.appendChild(el);
+ });
+ let priority = items.findIndex((_,i)=>answers[i]==="red");
+ if(priority<0) priority=items.findIndex((_,i)=>answers[i]==="yellow");
+ if(priority<0) priority=0;
+ document.getElementById("finalAction").textContent=`В первую очередь я бы посмотрела на «${items[priority].name}»: ${items[priority].advice}`;
+}
+function restart(){
+ answers=Array(items.length).fill(null);current=0;
+ document.getElementById("results").classList.remove("active");
+ document.getElementById("intro").style.display="";
+ document.getElementById("quiz").style.display="";
+ render();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+render();
+</script>
+</body>
+</html>
